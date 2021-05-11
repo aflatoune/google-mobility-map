@@ -8,4 +8,4 @@ Depuis le début de la pandémie, Google publie en libre accès les [données de
 
 * Le dossier `output\` présente des exemples de cartes et de graphiques réalisés à partir des scripts. C'est ici que sont enregistrées les sorties.
 
-Le script `run.R` explicite l'usage des fonctions du dossier `src\` pour produire les objets souhaités.
+Les scripts `run_map.R` et `run_plot.R` explicitent l'usage des fonctions du dossier `src\` pour produire les objets souhaités.
