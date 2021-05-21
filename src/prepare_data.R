@@ -62,10 +62,8 @@ prepare_data <- function(google_data, level = 'DEP') {
             'residential'
         )
         google_data <- google_data %>%
-            dplyr::filter(!is.na(google_data$sub_region_2))
-        google_data$DEP <- sapply(google_data$iso_3166_2_code,
-                                  function(x)
-                                      gsub('FR-', '', x))
+            dplyr::filter(!is.na(google_data$sub_region_2)) %>%
+            dplyr::mutate(DEP = gsub('FR-', '', iso_3166_2_code))
     } else if (level == 'FR') {
         mycols <- c(
             'country_region_code',
@@ -80,24 +78,17 @@ prepare_data <- function(google_data, level = 'DEP') {
             dplyr::filter(is.na(google_data$sub_region_1))
     }
     google_data <- google_data %>%
-        dplyr::select(dplyr::all_of(mycols))
-    google_data$total <- (
-        google_data$retail_and_recreation +
-            google_data$grocery_and_pharmacy + google_data$transit_stations +
-            google_data$workplaces - google_data$residential
-    ) / 5
-    dep_data <- google_data
-    return(dep_data)
-}
-
-
-.impute_NA <- function(X, level) {
-    X <- X %>%
-        dplyr::group_by(rlang::.data[[level]]) %>%
-        dplyr::mutate_if(is.numeric,
-                         function(x)
-                             ifelse(is.na(x), mean(x, na.rm = TRUE), x))
-    return(X)
+        dplyr::select(dplyr::all_of(mycols)) %>%
+        dplyr::mutate(
+            total = (
+                retail_and_recreation +
+                    grocery_and_pharmacy +
+                    transit_stations +
+                    workplaces -
+                    residential
+            ) / 5
+        )
+    return(google_data)
 }
 
 
@@ -118,9 +109,9 @@ filter_date <- function(X, date_vect, level) {
 
 
 aggregate_data <- function(X, level = 'DEP', FUN = mean) {
-    X <- stats::aggregate(dplyr::select_if(X, is.numeric),
-                          by = X[, level],
-                          FUN = FUN)
+    X <- X %>%
+        dplyr::select(-date) %>% dplyr::group_by(DEP) %>%
+        dplyr::summarise(dplyr::across(everything(), FUN))
     return(X)
 }
 
@@ -133,6 +124,16 @@ merge_with_geo <- function(X, geo_data, level) {
 
 compute_moving_average <- function(X, level, n = 7) {
     # TO DO
+    return(X)
+}
+
+
+.impute_NA <- function(X, level) {
+    X <- X %>%
+        dplyr::group_by(rlang::.data[[level]]) %>%
+        dplyr::mutate_if(is.numeric,
+                         function(x)
+                             ifelse(is.na(x), mean(x, na.rm = TRUE), x))
     return(X)
 }
 
@@ -156,8 +157,7 @@ prepare_map_data <- function(date_vect, level = 'DEP') {
         geo_data <- read_data('departement_2020.gpkg', geo = T)
         dep_data <- prepare_data(google_data)
     }
-    X <-
-        filter_date(dep_data, date_vect = date_vect, level = level) %>%
+    X <-  filter_date(dep_data, date_vect = date_vect, level = level) %>%
         .translate_col_names() %>%
         aggregate_data(level = level) %>%
         merge_with_geo(geo_data, level = level)

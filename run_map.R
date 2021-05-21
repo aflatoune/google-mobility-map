@@ -24,8 +24,8 @@ if (download) {
 
 # Renseigner la période à étudier et créer le dataframe
 
-date_start <- as.Date('2021-04-26')
-date_end <- as.Date('2021-05-02')
+date_start <- as.Date('2021-05-10')
+date_end <- as.Date('2021-05-16')
 X_map <- prepare_map_data(date_vect = c(date_start, date_end))
 
 ##### En "statique"
@@ -42,20 +42,6 @@ dep_to_highlight <-
         '02',
         '06',
         '27',
-        '59',
-        '60',
-        '62',
-        '75',
-        '76',
-        '77',
-        '78',
-        '80',
-        '91',
-        '92',
-        '93',
-        '94',
-        '95',
-        '10',
         '58',
         '69'
     )
