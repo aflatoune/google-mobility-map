@@ -24,8 +24,8 @@ if (download) {
 
 # Renseigner la période à étudier et créer le dataframe
 
-date_start <- as.Date('2021-05-10')
-date_end <- as.Date('2021-05-16')
+date_start <- as.Date('2021-05-31')
+date_end <- as.Date('2021-06-06')
 X_map <- prepare_map_data(date_vect = c(date_start, date_end))
 
 ##### En "statique"
@@ -35,7 +35,7 @@ X_map <- prepare_map_data(date_vect = c(date_start, date_end))
 # en cas d'enregistrement.
 #
 # Pour mettre en évidence certains départements, renseigner le paramètre
-# dep_to_higlight sous forme de liste contenant un ou plusieurs vecteurs
+# dep_to_higlight sous forme de vecteur
 
 dep_to_highlight <-
     c(
@@ -79,7 +79,6 @@ for (col in colnames(X_map)[2:7]) {
         X = X_map,
         col = col,
         date_vect = c(date_start, date_end),
-        #dep_to_highlight = dep_confinement,
         save = F
     )
     map_grid_2 <- map_dep(
@@ -87,13 +86,12 @@ for (col in colnames(X_map)[2:7]) {
         col = col,
         date_vect = c(date_start - diff_period, date_start),
         plot_diff = T,
-        #dep_to_highlight = dep_confinement,
         save = F,
         palette = 'PRGn'
     )
     grid <- tmap::tmap_arrange(map_grid_1, map_grid_2)
     if (TRUE) {
-        file_name = glue::glue(paste0('grid_{col}_',
+        file_name <- glue::glue(paste0('grid_{col}_',
                                       '{date_start}',
                                       '.png'))
         file_name <- gsub(' ', '_', file_name)

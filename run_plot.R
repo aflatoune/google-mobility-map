@@ -34,7 +34,7 @@ timeline <- list(c('2020-10-28', '2020-10-28', ''),
 # 'FR' et en renseignant un vecteur de dates sous la forme :
 # c(date début, date fin).
 
-X_graph <- prepare_plot_data(date_vect = c('2020-10-01', '2021-04-18'),
+X_graph <- prepare_plot_data(date_vect = c('2021-03-01', '2021-05-21'),
                       level = 'FR')
 rolling_mean <- tibbletime::rollify(mean, 7)
 X_graph <- X_graph %>%
@@ -87,7 +87,8 @@ X_graph <- X_graph %>%
     dplyr::mutate(DEP = dplyr::case_when(DEP %in% dep_confinement ~ 'confines',
                                          T ~ 'non_confines')) %>%
     dplyr::group_by(date, DEP) %>%
-    dplyr::summarise_all(mean)
+    dplyr::summarise_all(mean) %>%
+    dplyr::ungroup()
 
 plot_dep(
     X = X_graph,
